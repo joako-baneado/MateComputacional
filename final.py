@@ -13,7 +13,6 @@ def showGraph(G):
                 dot.edge(str(i),str(j))
     return dot
 
-
 #CREAR MATRIZ RANDOM
 def randomMatrix(n):
     M = np.random.randint(low=0,high=2,size=(n,n),dtype=int)
@@ -124,6 +123,7 @@ def componentes(M):
 
     return L
 
+#INGRESAR MATRIZ OUTDATED
 def ingresar_matriz():
     while 1:
         tam = int(input("Ingrese el tamaño de la matriz: (de 8 a 16)\n"))
@@ -148,6 +148,52 @@ def ingresar_matriz():
     
     return matriz
 
+def ingresar_grafo():
+    grafo = {}
+    num_nodos = int(input("Ingresa el número de nodos: "))
+    num_aristas = int(input("Ingresa el número de aristas: "))
+    
+    nodos = []
+    
+    # Ingresar nodos
+    for i in range(num_nodos):
+        nodo = input(f"Ingrese el nombre del nodo {i+1}: ")
+        if nodo not in grafo:
+            grafo[nodo] = []
+        nodos.append(nodo)
+
+    # Ingresar aristas
+    for i in range(num_aristas):
+        while (1):
+            nodo1 = input(f"Ingrese el nodo de origen de la arista {i+1}: ")
+            nodo2 = input(f"Ingrese el nodo de destino de la arista {i+1}: ")
+            
+            # Asegurarse de que ambos nodos existan en el grafo
+            if nodo1 in grafo and nodo2 in grafo:
+                grafo[nodo1].append(nodo2)
+                grafo[nodo2].append(nodo1)  # Si el grafo es no dirigido
+                break
+            else:
+                print("Uno o ambos nodos no existen en el grafo. Inténtalo de nuevo.")
+
+    return grafo, nodos
+
+
+def convertir_a_matriz_adyacencia(grafo, nodos):
+    num_nodos = len(nodos)
+    matriz = np.zeros((num_nodos*num_nodos),dtype= int)
+    matriz = matriz.reshape(num_nodos,num_nodos)
+    # Crear un índice para cada nodo
+    indices = {nodo: idx for idx, nodo in enumerate(nodos)}
+    # Llenar la matriz de adyacencia
+    for nodo in grafo:
+        for vecino in grafo[nodo]:
+            i = indices[nodo]
+            j = indices[vecino]
+            matriz[i,j] = 1  # Hay una arista entre nodo y vecino
+    
+    return matriz
+
 def crear_matriz_aleatoria():
     M = []
     while 1:
@@ -158,7 +204,9 @@ def crear_matriz_aleatoria():
     M = randomMatrix(n,n*2)
     return M  
 
-
+def ingreso_grafo_manual():
+    grafo, nodos = ingresar_grafo()
+    return convertir_a_matriz_adyacencia(grafo, nodos) 
 
 def main():   
     print("Ingrese opción: ")
@@ -171,9 +219,9 @@ def main():
     if n==1:
         M = crear_matriz_aleatoria()
     elif n==2:
-        M = ingresar_matriz()
+        M = ingreso_grafo_manual()
     
-    print("matriz generada:")
+    print("matriz de adyaciencia generada:")
     print(M)
 
     print("Ponemos unos en la diagonal:")
