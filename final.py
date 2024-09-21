@@ -123,10 +123,12 @@ def ingresar_grafo():
     grafo = {}
     num_nodos = Ingresar_n_entre8y16()
     while 1:
-        num_aristas = int(input("Ingrese el número de aristas: \n"))
-        if num_aristas>=1 and num_aristas<=num_nodos*num_nodos:
-            break    
-        else: print("Ingrese un valor correcto.")
+        num_aristas = input("Ingrese el número de aristas: \n")
+        if es_entero(num_aristas): 
+            num_aristas = int(num_aristas)
+            if num_aristas>=1 and num_aristas<=num_nodos*num_nodos:
+                break    
+        print("Ingrese un valor correcto.")
     
     #num_aristas = int(input("Ingresa el número de aristas: "))
     
@@ -170,12 +172,21 @@ def convertir_a_matriz_adyacencia(grafo, nodos):
     
     return matriz
 
+def es_entero(n):
+    try:
+        int(n)
+        return True
+    except ValueError:
+        return False
+
 def Ingresar_n_entre8y16():
     while 1:
-        n = int(input("Ingrese el número de nodos: (de 8 a 16) \n"))
-        if n>=8 and n<=16:
-            break    
-        else: print("Ingrese un valor correcto.")
+        n = input("Ingrese el número de nodos: (de 8 a 16) \n")
+        if es_entero(n):
+            n = int(n)
+            if n>=8 and n<=16:
+                break    
+        print("Ingrese un valor correcto.")
     return n
 
 def crear_matriz_aleatoria():
@@ -193,9 +204,11 @@ def main():
     while 1:
         print("1: Generar Matriz aleatoria \n2: Ingresar datos de una Matriz")
         n = input()
-        n = int(n)
-        if n==1 or n ==2:
-            break    
+        if es_entero(n):
+            n = int(n)
+            if n==1 or n ==2:
+                break    
+        print("Ingrese un valor válido.")
     if n==1:
         M = crear_matriz_aleatoria()
     elif n==2:
