@@ -13,11 +13,6 @@ def showGraph(G):
                 dot.edge(str(i),str(j))
     return dot
 
-#CREAR MATRIZ RANDOM
-def randomMatrix(n):
-    M = np.random.randint(low=0,high=2,size=(n,n),dtype=int)
-    return M
-
 #CREAR MATRIZ RANDOM CON M UNOS
 def randomMatrix(n,m):
     G=np.zeros((n*n),dtype= int)
@@ -123,35 +118,17 @@ def componentes(M):
 
     return L
 
-#INGRESAR MATRIZ OUTDATED
-def ingresar_matriz():
-    while 1:
-        tam = int(input("Ingrese el tamaño de la matriz: (de 8 a 16)\n"))
-        if tam>=8 and tam<=16:
-            break    
-        else: print("Ingrese un valor correcto. \n")
-    
-    # Inicializamos la matriz vacía
-    matriz = np.zeros((tam,tam),dtype= int)
-    
-    # Recorremos cada fila
-    for i in range(tam):
-        for j in range(tam):
-            # Pedimos el valor para cada elemento de la matriz
-            while 1:
-                valor = int(input(f"Ingrese el valor para la posición ({i},{j}): "))
-                if valor>=0 and valor<=1:
-                    break    
-                else: print("Ingrese un valor correcto.")   
-            
-            matriz[i,j]= valor
-    
-    return matriz
 
 def ingresar_grafo():
     grafo = {}
-    num_nodos = int(input("Ingresa el número de nodos: "))
-    num_aristas = int(input("Ingresa el número de aristas: "))
+    num_nodos = Ingresar_n_entre8y16()
+    while 1:
+        num_aristas = int(input("Ingrese el número de aristas: \n"))
+        if num_aristas>=1 and num_aristas<=num_nodos*num_nodos:
+            break    
+        else: print("Ingrese un valor correcto.")
+    
+    #num_aristas = int(input("Ingresa el número de aristas: "))
     
     nodos = []
     
@@ -178,7 +155,6 @@ def ingresar_grafo():
 
     return grafo, nodos
 
-
 def convertir_a_matriz_adyacencia(grafo, nodos):
     num_nodos = len(nodos)
     matriz = np.zeros((num_nodos*num_nodos),dtype= int)
@@ -194,13 +170,17 @@ def convertir_a_matriz_adyacencia(grafo, nodos):
     
     return matriz
 
-def crear_matriz_aleatoria():
-    M = []
+def Ingresar_n_entre8y16():
     while 1:
-        n = int(input("Ingrese n: (de 8 a 16) \n"))
+        n = int(input("Ingrese el número de nodos: (de 8 a 16) \n"))
         if n>=8 and n<=16:
             break    
-        else: print("Ingrese un valor correcto. \n")
+        else: print("Ingrese un valor correcto.")
+    return n
+
+def crear_matriz_aleatoria():
+    M = []
+    n = Ingresar_n_entre8y16()
     M = randomMatrix(n,n*2)
     return M  
 
