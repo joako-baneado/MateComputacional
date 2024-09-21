@@ -236,6 +236,9 @@ def main():
     print(comp_temp) 
 
 
+    input("Presiona para proceder...")
+
+
 
 if __name__ == "__main__":
     main()
