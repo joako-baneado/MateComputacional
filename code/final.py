@@ -25,7 +25,12 @@ def randomMatrix(n,m):
 def normalize(M):
     for i in range(len(M)):
         M[i,i] = 1
-
+#PONEMOS CEORS EN LA DIAGONAL
+def denormalize(M):
+    Graph = np.copy(M)
+    for i in range(len(Graph)):
+        Graph[i,i] = 0
+    return Graph
 #MODIFICAMOS M A LA MATRIZ DE CAMINOS
 def matrix_caminos(M):
     size = len(M)
@@ -192,7 +197,7 @@ def Ingresar_n_entre8y16():
 def crear_matriz_aleatoria():
     M = []
     n = Ingresar_n_entre8y16()
-    M = randomMatrix(n,n*2)
+    M = randomMatrix(n,int((n/2)*n))
     return M  
 
 def ingreso_grafo_manual():
@@ -216,7 +221,7 @@ def main():
     
     print("matriz de adyaciencia generada:")
     print(M)
-
+    showGraph(denormalize(M)).view("GrafoInicial")
     print("Ponemos unos en la diagonal:")
     normalize(M)
     print(M)
@@ -232,7 +237,7 @@ def main():
     f_recursiva(0,M,1,comp_temp)
     L = componentes(M)
     print(L)
-    showGraph(L).view()
+    showGraph(denormalize(L)).view("GrafoFinal")
     print(comp_temp) 
 
 
