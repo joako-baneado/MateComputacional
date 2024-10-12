@@ -1,19 +1,7 @@
 import numpy as np
 from collections import deque
-import graphviz as gv
 import networkx as nx
 import matplotlib.pyplot as plt
-
-def showGraph(G):
-    n = len(G)
-    dot = gv.Digraph("g")
-    for i in range(n):
-        dot.node(str(i))
-    for i in range (n):
-        for j in range(n):
-            if(G[i,j] == 1):
-                dot.edge(str(i),str(j))
-    return dot
 
 def showGraphnetworkx(G1, G2):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
@@ -29,7 +17,7 @@ def showGraphnetworkx(G1, G2):
     # Grafo 2
     graph2 = nx.from_numpy_array(G2)
     nx.draw(graph2, ax=ax2, with_labels=True, node_color='lightgreen', node_size=500, font_size=10, font_weight='bold')
-    ax2.set_title("Grafo final")
+    ax2.set_title("Componentes conexas")
     
     # Añadir una línea vertical entre los grafos
     fig.add_subplot(111, frameon=False)
@@ -51,12 +39,15 @@ def randomMatrix(n,m):
 def normalize(M):
     for i in range(len(M)):
         M[i,i] = 1
+    return M
+
 #PONEMOS CEORS EN LA DIAGONAL
 def denormalize(M):
     Graph = np.copy(M)
     for i in range(len(Graph)):
         Graph[i,i] = 0
     return Graph
+
 #MODIFICAMOS M A LA MATRIZ DE CAMINOS
 def matrix_caminos(M):
     size = len(M)
@@ -89,7 +80,7 @@ def reordenar(M):
         num = int(orden[i,0])
         if num != i:
             L[i,:] = M[num,:]
-    print("orden aplicado en las filas")
+    print("nuevo orden aplicado en las filas")
     print(L)
     M = np.transpose(L)
     L = np.copy(M)       
@@ -97,12 +88,12 @@ def reordenar(M):
         num = int(orden[i,0])
         if num != i:
             L[i,:] = M[num,:]
-    print("orden aplicado en las filas")
+    print("nuevo orden aplicado en las filas")
     M = np.transpose(L)
     print(M)
     return M
 
-def f_recursiva(inicio, matriz, t_cuadrado, comp_temp):
+def componentesconexas(inicio, matriz, t_cuadrado, comp_temp):
     result = []
     for i_f in range(inicio, inicio+t_cuadrado):
         for i_c in range(inicio, inicio+t_cuadrado):
@@ -115,19 +106,19 @@ def f_recursiva(inicio, matriz, t_cuadrado, comp_temp):
             comp_temp.append(lista_c)
             return comp_temp
         else:
-            f_recursiva(inicio, matriz, t_cuadrado+1, comp_temp)
+            componentesconexas(inicio, matriz, t_cuadrado+1, comp_temp)
     elif t_cuadrado != 1:
             lista_c = []
             for num in range(inicio, inicio + t_cuadrado - 1):
                  lista_c.append(num)
             comp_temp.append(lista_c)
-            f_recursiva(inicio + t_cuadrado - 1, matriz, 1, comp_temp)
+            componentesconexas(inicio + t_cuadrado - 1, matriz, 1, comp_temp)
     elif inicio +t_cuadrado == len(matriz):
          return comp_temp
     else:
-        f_recursiva(inicio+1, matriz, 1, comp_temp)
+        componentesconexas(inicio+1, matriz, 1, comp_temp)
 
-def componentes(M,comp):
+def matrizcomponentes(M,comp):
     L = np.zeros_like(M)
     for i in comp:
         L[i[0]:i[-1]+1,i[0]:i[-1]+1] = 1
@@ -144,26 +135,29 @@ def ingresar_grafo():
             if num_aristas>=1 and num_aristas<=num_nodos*num_nodos:
                 break    
         print("Ingrese un valor correcto.")
-    
-    #num_aristas = int(input("Ingresa el número de aristas: "))
+
     
     nodos = []
     
     # Ingresar nodos
-    for i in range(num_nodos):
-        nodo = input(f"Ingrese el nombre del nodo {i+1}: ")
-        if nodo not in grafo:
+    i = 0
+    while  i < num_nodos:
+        nodo = input("Ingrese el nombre del nodo {}: \n".format(i+1))
+        if nodo not in grafo and nodo != "":
             grafo[nodo] = []
-        nodos.append(nodo)
+            nodos.append(nodo)
+            i += 1
+        else:
+            print("El nombre del nodo ya existe. Por favor, ingrese otro nombre.")
 
     # Ingresar aristas
     for i in range(num_aristas):
         while (1):
-            nodo1 = input(f"Ingrese el nodo de origen de la arista {i+1}: ")
-            nodo2 = input(f"Ingrese el nodo de destino de la arista {i+1}: ")
+            nodo1 = input(f"Ingrese el nodo de origen de la arista {i+1}: ({nodos}) \n")
+            nodo2 = input(f"Ingrese el nodo de destino de la arista {i+1}: ({nodos})    \n")
             
             # Asegurarse de que ambos nodos existan en el grafo
-            if nodo1 in grafo and nodo2 in grafo:
+            if nodo1 in grafo and nodo2 in grafo and nodo1 != nodo2:
                 grafo[nodo1].append(nodo2)
                 grafo[nodo2].append(nodo1)  # Si el grafo es no dirigido
                 break
@@ -234,7 +228,7 @@ def main():
     ini = np.copy(M)
     #showGraph(denormalize(M)).view("GrafoInicial")
     print("Ponemos unos en la diagonal:")
-    normalize(M)
+    M = normalize(M)
     print(M)
 
     matrix_caminos(M)
@@ -245,14 +239,12 @@ def main():
     print(M)
     print("Componentes Conexas:")
     comp_temp = []
-    f_recursiva(0,M,1,comp_temp)
-    L = componentes(M,comp_temp)
+    componentesconexas(0, normalize(ini),1,comp_temp)
+    L = matrizcomponentes(M,comp_temp)
     print(L)
     #showGraph(denormalize(L)).view("GrafoFinal")
-    print(comp_temp) 
-    
+    print(comp_temp)
     showGraphnetworkx(denormalize(ini),denormalize(L))
-
     input("Presiona para proceder...")
 
 
