@@ -1,6 +1,8 @@
 import numpy as np
 from collections import deque
 import graphviz as gv
+import networkx as nx
+import matplotlib.pyplot as plt
 
 def showGraph(G):
     n = len(G)
@@ -12,6 +14,30 @@ def showGraph(G):
             if(G[i,j] == 1):
                 dot.edge(str(i),str(j))
     return dot
+
+def showGraphnetworkx(G1, G2):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+    
+    # Aumentar el espacio entre subplots
+    plt.subplots_adjust(wspace=0.3)
+    
+    # Grafo 1
+    graph1 = nx.from_numpy_array(G1)
+    nx.draw(graph1, ax=ax1, with_labels=True, node_color='lightblue', node_size=500, font_size=10, font_weight='bold')
+    ax1.set_title("Grafo inicial")
+    
+    # Grafo 2
+    graph2 = nx.from_numpy_array(G2)
+    nx.draw(graph2, ax=ax2, with_labels=True, node_color='lightgreen', node_size=500, font_size=10, font_weight='bold')
+    ax2.set_title("Grafo final")
+    
+    # Añadir una línea vertical entre los grafos
+    fig.add_subplot(111, frameon=False)
+    plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
+    plt.grid(False)
+    
+    plt.tight_layout()
+    plt.show()
 
 #CREAR MATRIZ RANDOM CON M UNOS
 def randomMatrix(n,m):
@@ -101,26 +127,10 @@ def f_recursiva(inicio, matriz, t_cuadrado, comp_temp):
     else:
         f_recursiva(inicio+1, matriz, 1, comp_temp)
 
-def componentes(M):
-    L = np.copy(M)
-    n = len(M)
-    max=0
-    comprobacion= np.where(M==0)
-    if len(comprobacion[0]) == 0:
-        return M
-    for i in range(n):
-        if i == n-1: return L
-        if max==0:
-            for j in range(n-i):
-                if M[i,j+i] == 0 or M[i+j,i] == 0:
-                    max=j
-                    break            
-        L[i,max+i:], L[max+i:,i] = 0 , 0
-        if max>=1: max = max-1
-    
-    for i in range(n):
-        L[i,i] = 1
-
+def componentes(M,comp):
+    L = np.zeros_like(M)
+    for i in comp:
+        L[i[0]:i[-1]+1,i[0]:i[-1]+1] = 1
     return L
 
 
@@ -197,7 +207,7 @@ def Ingresar_n_entre8y16():
 def crear_matriz_aleatoria():
     M = []
     n = Ingresar_n_entre8y16()
-    M = randomMatrix(n,int((n/2)*n))
+    M = randomMatrix(n,n*2)
     return M  
 
 def ingreso_grafo_manual():
@@ -221,7 +231,8 @@ def main():
     
     print("matriz de adyaciencia generada:")
     print(M)
-    showGraph(denormalize(M)).view("GrafoInicial")
+    ini = np.copy(M)
+    #showGraph(denormalize(M)).view("GrafoInicial")
     print("Ponemos unos en la diagonal:")
     normalize(M)
     print(M)
@@ -235,11 +246,12 @@ def main():
     print("Componentes Conexas:")
     comp_temp = []
     f_recursiva(0,M,1,comp_temp)
-    L = componentes(M)
+    L = componentes(M,comp_temp)
     print(L)
-    showGraph(denormalize(L)).view("GrafoFinal")
+    #showGraph(denormalize(L)).view("GrafoFinal")
     print(comp_temp) 
-
+    
+    showGraphnetworkx(denormalize(ini),denormalize(L))
 
     input("Presiona para proceder...")
 
