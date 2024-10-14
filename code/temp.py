@@ -94,7 +94,7 @@ def normalize(M):
 
 # Ejemplo de uso
 n_paradas = 8
-n_rutas = 8
+n_rutas = 5
 max_conexiones = 2
 
 G, matriz_adyacencia = generar_red(n_paradas, n_rutas, max_conexiones)

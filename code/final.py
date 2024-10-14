@@ -2,6 +2,7 @@ import numpy as np
 from collections import deque
 import networkx as nx
 import matplotlib.pyplot as plt
+import random
 
 def showGraphnetworkx(G1, G2):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
@@ -93,7 +94,7 @@ def reordenar(M):
     print(M)
     return M
 
-def componentesconexas(inicio, matriz, t_cuadrado, comp_temp):
+def f_recursiva(inicio, matriz, t_cuadrado, comp_temp):
     result = []
     for i_f in range(inicio, inicio+t_cuadrado):
         for i_c in range(inicio, inicio+t_cuadrado):
@@ -106,17 +107,17 @@ def componentesconexas(inicio, matriz, t_cuadrado, comp_temp):
             comp_temp.append(lista_c)
             return comp_temp
         else:
-            componentesconexas(inicio, matriz, t_cuadrado+1, comp_temp)
+            f_recursiva(inicio, matriz, t_cuadrado+1, comp_temp)
     elif t_cuadrado != 1:
             lista_c = []
             for num in range(inicio, inicio + t_cuadrado - 1):
                  lista_c.append(num)
             comp_temp.append(lista_c)
-            componentesconexas(inicio + t_cuadrado - 1, matriz, 1, comp_temp)
+            f_recursiva(inicio + t_cuadrado - 1, matriz, 1, comp_temp)
     elif inicio +t_cuadrado == len(matriz):
          return comp_temp
     else:
-        componentesconexas(inicio+1, matriz, 1, comp_temp)
+        f_recursiva(inicio+1, matriz, 1, comp_temp)
 
 def matrizcomponentes(M,comp):
     L = np.zeros_like(M)
@@ -208,6 +209,14 @@ def ingreso_grafo_manual():
     grafo, nodos = ingresar_grafo()
     return convertir_a_matriz_adyacencia(grafo, nodos) 
 
+def volver_conexo(M):
+    for  i in range(len(M)):
+        if np.nonzero(M[i,0:]) == 0:
+            M[i,random.randint(0,i-1)] = 1
+            
+
+
+
 def main():   
     print("Ingrese opción: ")
     while 1:
@@ -227,11 +236,17 @@ def main():
     print(M)
     ini = np.copy(M)
     #showGraph(denormalize(M)).view("GrafoInicial")
+
+    print("Comprobamos que el grafo sea conexo: ")
+    volver_conexo(M)
+    print(M)
+
     print("Ponemos unos en la diagonal:")
     M = normalize(M)
     print(M)
 
     matrix_caminos(M)
+    mcaminos = np.copy(M)
     print("MATRIZ DE CAMINOS:")
     print(M)
     M = reordenar(M)
@@ -239,12 +254,12 @@ def main():
     print(M)
     print("Componentes Conexas:")
     comp_temp = []
-    componentesconexas(0, normalize(ini),1,comp_temp)
+    f_recursiva(0, mcaminos,1,comp_temp)
     L = matrizcomponentes(M,comp_temp)
     print(L)
     #showGraph(denormalize(L)).view("GrafoFinal")
     print(comp_temp)
-    showGraphnetworkx(denormalize(ini),denormalize(L))
+    showGraphnetworkx(denormalize(ini),denormalize(mcaminos))
     input("Presiona para proceder...")
 
 
