@@ -92,7 +92,7 @@ def reordenar(M):
     print("nuevo orden aplicado en las filas")
     M = np.transpose(L)
     print(M)
-    return M
+    return M, orden
 
 def f_recursiva(inicio, matriz, t_cuadrado, comp_temp):
     result = []
@@ -215,6 +215,46 @@ def volver_conexo(M):
             M[i,random.randint(0,i-1)] = 1
             
 
+def deordenar(comps,orden):
+    cont = 0
+    for  i in range(len(comps)):
+        for j in range(len(comps[i])):
+            comps[i][j] = int(orden[cont,0])
+            cont += 1
+    return comps
+
+def grafo_conexo(comps):
+    graf = nx.graph
+    for  i in range(len(comps)):
+        for j in range(len(comps[i])):
+            return
+
+def create_graph(data):
+    graph = {}
+    for i, nodes in enumerate(data):
+        for node in nodes:
+            if node not in graph:
+                graph[node] = []
+            graph[node].append(i)
+    return graph
+
+def crear_grafo_ciclico(arreglo):
+    # Crear un grafo vacío
+    G = nx.Graph()
+    
+    # Añadir todos los nodos al grafo
+    for sub_arreglo in arreglo:
+        for nodo in sub_arreglo:
+            G.add_node(nodo)
+    
+    # Añadir conexiones cíclicas para sub-arreglos con más de un nodo
+    for sub_arreglo in arreglo:
+        num_nodos = len(sub_arreglo)
+        if num_nodos > 1:
+            for i in range(num_nodos):
+                G.add_edge(sub_arreglo[i], sub_arreglo[(i + 1) % num_nodos])
+    
+    return G
 
 
 def main():   
@@ -249,7 +289,7 @@ def main():
     mcaminos = np.copy(M)
     print("MATRIZ DE CAMINOS:")
     print(M)
-    M = reordenar(M)
+    M, orden = reordenar(M)
     print("REORDEN FINAL:")
     print(M)
     print("Componentes Conexas:")
@@ -259,7 +299,13 @@ def main():
     print(L)
     #showGraph(denormalize(L)).view("GrafoFinal")
     print(comp_temp)
-    showGraphnetworkx(denormalize(ini),denormalize(mcaminos))
+    print(deordenar(comp_temp,orden))
+
+    showGraphnetworkx(denormalize(ini),denormalize(L))
+
+    G = crear_grafo_ciclico(comp_temp)
+    nx.draw(G, with_labels=True, node_color='lightblue', font_weight='bold')
+    plt.show()
     input("Presiona para proceder...")
 
 
