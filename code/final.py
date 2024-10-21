@@ -51,13 +51,18 @@ def denormalize(M):
 
 #MODIFICAMOS M A LA MATRIZ DE CAMINOS
 def matrix_caminos(M):
-    size = len(M)
-    for i in range(size):
-        for j in range(size):
-            if M[i,j] == 1 and i!=j:
-                for k in range(size):
-                    if M[j,k] == 1:
-                        M[i,k] = 1
+    # Convertimos la lista a un arreglo de NumPy
+    caminos = np.array(M, copy=True)
+    size = caminos.shape[0]
+    
+    # Aplicamos el algoritmo de Floyd-Warshall
+    for k in range(size):
+        for i in range(size):
+            for j in range(size):
+                if caminos[i, k] == 1 and caminos[k, j] == 1:
+                    caminos[i, j] = 1
+
+    return caminos
 
 #REORDENAMOS M DE MAYOR A MENOR CON BUBBLESORT
 def reordenar(M):
@@ -285,7 +290,7 @@ def main():
     M = normalize(M)
     print(M)
 
-    matrix_caminos(M)
+    M = matrix_caminos(M)
     mcaminos = np.copy(M)
     print("MATRIZ DE CAMINOS:")
     print(M)
