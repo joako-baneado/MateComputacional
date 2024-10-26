@@ -4,28 +4,14 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import random
 
-def showGraphnetworkx(G1, G2):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
-    
-    # Aumentar el espacio entre subplots
-    plt.subplots_adjust(wspace=0.3)
-    
-    # Grafo 1
+def showGraphnetworkx(G1):    
     graph1 = nx.from_numpy_array(G1)
-    nx.draw(graph1, ax=ax1, with_labels=True, node_color='lightblue', node_size=500, font_size=10, font_weight='bold')
-    ax1.set_title("Grafo inicial")
     
-    # Grafo 2
-    graph2 = nx.from_numpy_array(G2)
-    nx.draw(graph2, ax=ax2, with_labels=True, node_color='lightgreen', node_size=500, font_size=10, font_weight='bold')
-    ax2.set_title("Componentes conexas")
+    plt.figure(figsize=(10, 8))  # Ajustar el tamaño de la figura
+    nx.draw(graph1, with_labels=True, node_color='lightblue', node_size=500, font_size=10, font_weight='bold')
     
-    # Añadir una línea vertical entre los grafos
-    fig.add_subplot(111, frameon=False)
-    plt.tick_params(labelcolor='none', top=False, bottom=False, left=False, right=False)
-    plt.grid(False)
-    
-    plt.tight_layout()
+    plt.title("Grafo Inicial")
+    plt.subplots_adjust(top=0.9)  # Ajustar el margen superior
     plt.show()
 
 #CREAR MATRIZ RANDOM CON M UNOS
@@ -212,7 +198,7 @@ def crear_matriz_aleatoria():
 
 def ingreso_grafo_manual():
     grafo, nodos = ingresar_grafo()
-    return convertir_a_matriz_adyacencia(grafo, nodos) 
+    return convertir_a_matriz_adyacencia(grafo, nodos),nodos,grafo
 
 def volver_conexo(M):
     for  i in range(len(M)):
@@ -226,6 +212,12 @@ def deordenar(comps,orden):
         for j in range(len(comps[i])):
             comps[i][j] = int(orden[cont,0])
             cont += 1
+    return comps
+
+def nombrarnodos(comps,nodos):
+    for  i in range(len(comps)):
+        for j in range(len(comps[i])):
+            comps[i][j] = nodos[comps[i][j]]
     return comps
 
 def grafo_conexo(comps):
@@ -261,11 +253,30 @@ def crear_grafo_ciclico(arreglo):
     
     return G
 
+def graficar_lista_adyacencia(diccionario_adyacencia):
+    # Crear un grafo vacío
+    G = nx.Graph()
+    
+    # Agregar los nodos y las aristas a partir del diccionario de adyacencia
+    for nodo, adyacentes in diccionario_adyacencia.items():
+        G.add_node(nodo)  # Asegurarse de que el nodo esté en el grafo
+        for adyacente in adyacentes:
+            G.add_edge(nodo, adyacente)
+    
+    # Dibujar el grafo
+    pos = nx.spring_layout(G)  # Posiciones para los nodos
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=700, font_size=10, font_color='black', font_weight='bold', edge_color='gray')
+    
+    # Mostrar el grafo
+    plt.title("Grafo Inicial")
+    plt.show()
 
 def main():   
+    manual = False
     print("Ingrese opción: ")
+    nodos = []
     while 1:
-        print("1: Generar Matriz aleatoria \n2: Ingresar datos de una Matriz")
+        print("1: Generar Grafo aleatorio \n2: Ingresar datos del Grafo manualmente")
         n = input()
         if es_entero(n):
             n = int(n)
@@ -274,9 +285,11 @@ def main():
         print("Ingrese un valor válido.")
     if n==1:
         M = crear_matriz_aleatoria()
+        showGraphnetworkx(denormalize(M))
     elif n==2:
-        M = ingreso_grafo_manual()
-    
+        manual = True
+        M, nodos,grafo_dic = ingreso_grafo_manual()        
+        print(graficar_lista_adyacencia(grafo_dic))
     print("matriz de adyaciencia generada:")
     print(M)
     ini = np.copy(M)
@@ -303,16 +316,15 @@ def main():
     L = matrizcomponentes(M,comp_temp)
     print(L)
     #showGraph(denormalize(L)).view("GrafoFinal")
-    print(comp_temp)
+    #print(comp_temp)
     print(deordenar(comp_temp,orden))
-
-    showGraphnetworkx(denormalize(ini),denormalize(L))
+    if(manual):print(nombrarnodos(comp_temp,nodos))
 
     G = crear_grafo_ciclico(comp_temp)
     nx.draw(G, with_labels=True, node_color='lightblue', font_weight='bold')
+    plt.title("Grafo de componentes conexas")
     plt.show()
     input("Presiona para proceder...")
-
 
 
 if __name__ == "__main__":
