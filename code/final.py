@@ -312,11 +312,10 @@ def main():
     print(M)
     print("Componentes Conexas:")
     comp_temp = []
-    f_recursiva(0, mcaminos,1,comp_temp)
+    f_recursiva(0, M,1,comp_temp)
     L = matrizcomponentes(M,comp_temp)
     print(L)
     #showGraph(denormalize(L)).view("GrafoFinal")
-    #print(comp_temp)
     print(deordenar(comp_temp,orden))
     if(manual):print(nombrarnodos(comp_temp,nodos))
 
