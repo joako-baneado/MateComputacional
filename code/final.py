@@ -310,14 +310,15 @@ def main():
     M, orden = reordenar(M)
     print("REORDEN FINAL:")
     print(M)
-    print("Componentes Conexas:")
+    print("Matriz de Componentes Conexas:")
     comp_temp = []
     f_recursiva(0, M,1,comp_temp)
     L = matrizcomponentes(M,comp_temp)
     print(L)
-    #showGraph(denormalize(L)).view("GrafoFinal")
-    print(deordenar(comp_temp,orden))
+    #showGraph(denormalize(L)).view("GrafoFinal")    
+    print("Componentes Conexas:")
     if(manual):print(nombrarnodos(comp_temp,nodos))
+    else: print(deordenar(comp_temp,orden))
 
     G = crear_grafo_ciclico(comp_temp)
     nx.draw(G, with_labels=True, node_color='lightblue', font_weight='bold')
